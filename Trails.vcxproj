@@ -154,9 +154,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Trails.cpp" />
   </ItemGroup>
   <ItemGroup>

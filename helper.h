@@ -3,6 +3,36 @@
 #include "CUESDK.h"
 #include <WinUser.h>
 
+enum class BezEffect
+{
+	Random,
+	HeatSpectrum
+};
+
+struct LitColor
+{
+	int r;
+	int g;
+	int b;
+};
+
+LitColor GetRandomLitColor()
+{
+	return { rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1 };
+}
+
+LitColor GetLitColorInSpectrum(LitColor start, LitColor end, float percent)
+{
+	if (percent > 100) { percent = 100; }
+
+	int r, g, b;
+	r = static_cast<int>(round(start.r + (percent / 100.f * (end.r - start.r))));
+	g = static_cast<int>(round(start.g + (percent / 100.f * (end.g - start.g))));
+	b = static_cast<int>(round(start.b + (percent / 100.f * (end.b - start.b))));
+
+	return { r, g, b };
+}
+
 CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
 {
 	switch (vkey)

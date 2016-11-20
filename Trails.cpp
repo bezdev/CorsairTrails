@@ -6,19 +6,31 @@
 #include <Windows.h>
 #include <iostream>
 #include <chrono>
+#include <thread>
 
 #include "helper.h"
 
-//#define DEBUG
+// #define DEBUG
 
-#define NUM_KEYS (CLI_Last + 1)
-#define MAX_LIT_TIME 1000 * 60 * 15 // 15 min
+const unsigned int NUM_KEYS = CLI_Last + 1;
+const unsigned int HITS_IN_SPECTRUM = 250;
+const int MAX_LIT_TIME = 1000 * 60 * 30/*min*/;
+const BezEffect ACTIVE_EFFECT = BezEffect::HeatSpectrum;
+const LitColor START_SPECTRUM = { 0, 191, 255 };
+const LitColor END_SPECTRUM = { 255, 0, 255 };
 
 HHOOK _hook;
 
 struct CorsairKey {
 	bool isLit;
-	std::chrono::high_resolution_clock::time_point time;
+	unsigned int hitCount;
+	std::chrono::high_resolution_clock::time_point litTime;
+
+	void Reset()
+	{
+		isLit = false;
+		hitCount = 0;
+	}
 };
 CorsairKey _corsairKeys[NUM_KEYS] = { 0 };
 
@@ -30,20 +42,33 @@ LRESULT __stdcall onKeyboardEvent(int nCode, WPARAM wParam, LPARAM lParam)
 		{
 			KBDLLHOOKSTRUCT kbd = *((KBDLLHOOKSTRUCT*)lParam);
 
-#ifdef DEBUG
-			std::cout << kbd.vkCode << std::endl;
-			std::cout << kbd.flags << std::endl;
-#endif
-
 			auto ledId = GetLedIdForKey(kbd.vkCode, kbd.flags);
 			if (ledId != CLI_Invalid)
 			{
-				auto ledColor = CorsairLedColor{ ledId, rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1 };
-				CorsairSetLedsColorsAsync(1, &ledColor, nullptr, nullptr);
-				_corsairKeys[ledId].isLit = true;
-				_corsairKeys[ledId].time = std::chrono::high_resolution_clock::now();
-			}
+				LitColor litColor = { 0 };
+				if (ACTIVE_EFFECT == BezEffect::Random)
+				{
+					litColor = GetRandomLitColor();
+				}
+				else if (ACTIVE_EFFECT == BezEffect::HeatSpectrum)
+				{
+					litColor = GetLitColorInSpectrum(START_SPECTRUM, END_SPECTRUM, 100.f * _corsairKeys[ledId].hitCount / HITS_IN_SPECTRUM);
+				}
 
+#ifdef DEBUG
+				std::cout << litColor.r << "," << litColor.g << "," << litColor.b << std::endl;
+#endif
+
+				auto ledColor = CorsairLedColor{ ledId, litColor.r, litColor.g, litColor.b };
+				CorsairSetLedsColorsAsync(1, &ledColor, nullptr, nullptr);
+
+				if (!_corsairKeys[ledId].isLit)
+				{
+					_corsairKeys[ledId].litTime = std::chrono::high_resolution_clock::now();
+				}
+				_corsairKeys[ledId].isLit = true;
+				_corsairKeys[ledId].hitCount++;
+			}
 #ifdef DEBUG
 			else
 			{
@@ -75,14 +100,16 @@ HRESULT Initialize()
 		return E_FAIL;
 	}
 
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 	
 	auto winLockColor = CorsairLedColor{ CLK_WinLock, 255, 0, 0 };
 	auto brightnessColor = CorsairLedColor{ CLK_Brightness, 255, 255, 255 };
+	auto logoColor = CorsairLedColor{ CLK_Logo, 255, 0, 0 };
 
 	CorsairSetLedsColorsAsync(1, &winLockColor, nullptr, nullptr);
 	CorsairSetLedsColorsAsync(1, &brightnessColor, nullptr, nullptr);
-
+	CorsairSetLedsColorsAsync(1, &logoColor, nullptr, nullptr);
+	
 	return S_OK;
 }
 
@@ -118,12 +145,12 @@ int main()
 		{
 			if (_corsairKeys[i].isLit)
 			{
-				std::chrono::duration<float, std::milli> elapsed = std::chrono::high_resolution_clock::now() - _corsairKeys[i].time;
+				std::chrono::duration<float, std::milli> elapsed = std::chrono::high_resolution_clock::now() - _corsairKeys[i].litTime;
 				if (elapsed.count() > MAX_LIT_TIME)
 				{
 					auto ledColor = CorsairLedColor{ static_cast<CorsairLedId>(i), 0, 0, 0 };
 					CorsairSetLedsColorsAsync(1, &ledColor, nullptr, nullptr);
-					_corsairKeys[i].isLit = false;
+					_corsairKeys[i].Reset();
 				}
 			}
 		}

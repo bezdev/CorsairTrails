@@ -29,7 +29,7 @@
     <ClInclude Include="include\CUESDKGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="helper.h">
+    <ClInclude Include="BezCorsairHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

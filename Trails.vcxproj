@@ -157,7 +157,7 @@
     <ClCompile Include="Trails.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="helper.h" />
+    <ClInclude Include="BezCorsairHelper.h" />
     <ClInclude Include="include\CorsairLedIdEnum.h" />
     <ClInclude Include="include\CUESDK.h" />
     <ClInclude Include="include\CUESDKGlobal.h" />

@@ -10,6 +10,8 @@
 
 #include "BezCorsairHelper.h"
 
+#define RETURN_IF_FAILED(hr) do{ if (FAILED(hr)) { return -1; } }while(0)
+
 // #define DEBUG
 
 const unsigned int NUM_KEYS             = CLI_Last + 1;
@@ -21,7 +23,8 @@ const LitColor     END_SPECTRUM         = { 255, 0, 255 };
 
 HHOOK _hook;
 
-struct CorsairKey {
+struct CorsairKey
+{
     bool isLit;
     unsigned int hitCount;
     std::chrono::high_resolution_clock::time_point litTime;
@@ -34,11 +37,21 @@ struct CorsairKey {
 };
 CorsairKey _corsairKeys[NUM_KEYS] = { 0 };
 
+bool SortByKeyCount (std::pair<std::string, int> k1, std::pair<std::string, int> k2)
+{
+    if (k1.second == k2.second)
+    {
+        return (k1.first < k2.first);
+    }
+
+    return (k1.second < k2.second);
+}
+
 void handleNumPad(DWORD vkey)
 {
     int size;
     CorsairLedColor* ledColors;
-    GetLedsForNumber(vkey - VK_NUMPAD0, { 255, 0, 0 }, &size, &ledColors);
+    GetLedsForNumber(vkey - VK_NUMPAD0, { 255, 0, 0 }, &ledColors, &size);
 
     CorsairSetLedsColorsAsync(size, ledColors, nullptr, nullptr);
     free(ledColors);
@@ -95,14 +108,14 @@ LRESULT __stdcall onKeyboardEvent(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(_hook, nCode, wParam, lParam);
 }
 
-HRESULT Initialize()
+HRESULT InitializeCorsair()
 {
     HRESULT hr = S_OK;
 
     CorsairPerformProtocolHandshake();
 
     if (const auto error = CorsairGetLastError()) {
-        std::cout << "Handshake failed: " << error << std::endl;
+        std::cerr << "Handshake failed: " << error << std::endl;
         return E_FAIL;
     }
 
@@ -115,12 +128,12 @@ HRESULT Initialize()
 
     if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, onKeyboardEvent, NULL, 0)))
     {
-        std::cout << "Hook failed" << std::endl;
+        std::cerr << "Hook failed" << std::endl;
         return E_FAIL;
     }
 
     srand(static_cast<unsigned int>(time(NULL)));
-    
+
     auto winLockColor = CorsairLedColor{ CLK_WinLock, 255, 0, 0 };
     auto brightnessColor = CorsairLedColor{ CLK_Brightness, 255, 255, 255 };
     auto logoColor = CorsairLedColor{ CLK_Logo, 255, 0, 0 };
@@ -138,29 +151,86 @@ void Cleanup()
     CorsairReleaseControl(CAM_ExclusiveLightingControl);
 }
 
+void Console()
+{
+    while (true)
+    {
+        std::cout << "Select option:" << std::endl;
+        std::cout << "1) Display total key hit counts" << std::endl;
+        int option;
+        std::cin >> option;
+
+        if (std::cin.fail())
+        {
+            std::cerr << "invalid option." << std::endl;
+            std::cin.clear();
+            std::cin.ignore();
+            continue;
+        }
+
+        // clear console
+        system("cls");
+
+        if (option == 1)
+        {
+            std::vector<std::pair<std::string, int>> keyHitCounts;
+
+            for (int i = 0; i < NUM_KEYS; i++)
+            {
+                if (_corsairKeys[i].hitCount > 0)
+                {
+                    keyHitCounts.push_back(make_pair(std::string(KeyToString(i)), _corsairKeys[i].hitCount));
+                    //std::cout << KeyToString(i) << ": " << _corsairKeys[i].hitCount << std::endl;
+                }
+            }
+
+            std::sort (keyHitCounts.begin(), keyHitCounts.end(), SortByKeyCount);
+            std::vector<std::pair<std::string, int>>::iterator it = keyHitCounts.end();
+            while (it != keyHitCounts.begin())
+            {
+                it--;
+
+                std::cout << (*it).first.c_str() << ": " << (*it).second << std::endl;
+            }
+        }
+    }
+}
+
 int main()
 {
-    if (FAILED(Initialize()))
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD numInputs = 0;
+    DWORD inputsRead = 0;
+
+    INPUT_RECORD irInput;
+
+    GetNumberOfConsoleInputEvents(hInput, &numInputs);
+    ReadConsoleInput(hInput, &irInput, 1, &inputsRead);
+
+    if (FAILED(InitializeCorsair()))
     {
         Cleanup();
         return -1;
     }
+
+    std::thread consoleThread (Console);
 
     MSG msg;
     while (true)
     {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-			if (msg.message == WM_QUIT)
-			{
-				Cleanup();
-				break;
-			}
+            if (msg.message == WM_QUIT)
+            {
+                Cleanup();
+                break;
+            }
 
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
+        
+        
         for (int i = 0; i < NUM_KEYS; i++)
         {
             if (_corsairKeys[i].isLit)

@@ -361,305 +361,305 @@ CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
     }
 }
 
-char* KeyToString(DWORD key)
+wchar_t* KeyToString(DWORD key)
 {
     switch (key)
     {
     case 1:
-        return "Escape";
+        return L"Esc";
     case 2:
-        return "F1";
+        return L"F1";
     case 3:
-        return "F2";
+        return L"F2";
     case 4:
-        return "F3";
+        return L"F3";
     case 5:
-        return "F4";
+        return L"F4";
     case 6:
-        return "F5";
+        return L"F5";
     case 7:
-        return "F6";
+        return L"F6";
     case 8:
-        return "F7";
+        return L"F7";
     case 9:
-        return "F8";
+        return L"F8";
     case 10:
-        return "F9";
+        return L"F9";
     case 11:
-        return "F10";
+        return L"F10";
     case 12:
-        return "F11";
+        return L"F11";
     case 13:
-        return "GraveAccentAndTilde";
+        return L"`~";
     case 14:
-        return "1";
+        return L"1";
     case 15:
-        return "2";
+        return L"2";
     case 16:
-        return "3";
+        return L"3";
     case 17:
-        return "4";
+        return L"4";
     case 18:
-        return "5";
+        return L"5";
     case 19:
-        return "6";
+        return L"6";
     case 20:
-        return "7";
+        return L"7";
     case 21:
-        return "8";
+        return L"8";
     case 22:
-        return "9";
+        return L"9";
     case 23:
-        return "0";
+        return L"0";
     case 24:
-        return "MinusAndUnderscore";
+        return L"-_";
     case 25:
-        return "Tab";
+        return L"Tab";
     case 26:
-        return "Q";
+        return L"Q";
     case 27:
-        return "W";
+        return L"W";
     case 28:
-        return "E";
+        return L"E";
     case 29:
-        return "R";
+        return L"R";
     case 30:
-        return "T";
+        return L"T";
     case 31:
-        return "Y";
+        return L"Y";
     case 32:
-        return "U";
+        return L"U";
     case 33:
-        return "I";
+        return L"I";
     case 34:
-        return "O";
+        return L"O";
     case 35:
-        return "P";
+        return L"P";
     case 36:
-        return "BracketLeft";
+        return L"[{";
     case 37:
-        return "CapsLock";
+        return L"C Lock";
     case 38:
-        return "A";
+        return L"A";
     case 39:
-        return "S";
+        return L"S";
     case 40:
-        return "D";
+        return L"D";
     case 41:
-        return "F";
+        return L"F";
     case 42:
-        return "G";
+        return L"G";
     case 43:
-        return "H";
+        return L"H";
     case 44:
-        return "J";
+        return L"J";
     case 45:
-        return "K";
+        return L"K";
     case 46:
-        return "L";
+        return L"L";
     case 47:
-        return "SemicolonAndColon";
+        return L";:";
     case 48:
-        return "ApostropheAndDoubleQuote";
+        return L"'\"";
     case 49:
-        return "LeftShift";
+        return L"L Shift";
     case 50:
-        return "NonUsBackslash";
+        return L"|";
     case 51:
-        return "Z";
+        return L"Z";
     case 52:
-        return "X";
+        return L"X";
     case 53:
-        return "C";
+        return L"C";
     case 54:
-        return "V";
+        return L"V";
     case 55:
-        return "B";
+        return L"B";
     case 56:
-        return "N";
+        return L"N";
     case 57:
-        return "M";
+        return L"M";
     case 58:
-        return "CommaAndLessThan";
+        return L",<";
     case 59:
-        return "PeriodAndBiggerThan";
+        return L".>";
     case 60:
-        return "SlashAndQuestionMark";
+        return L"/?";
     case 61:
-        return "LeftCtrl";
+        return L"L Ctrl";
     case 62:
-        return "LeftGui";
+        return L"WIN";
     case 63:
-        return "LeftAlt";
+        return L"L Alt";
     case 64:
-        return "Lang2";
+        return L"Lang2";
     case 65:
-        return "Space";
+        return L"Space";
     case 66:
-        return "Lang1";
+        return L"Lang1";
     case 67:
-        return "International2";
+        return L"International2";
     case 68:
-        return "RightAlt";
+        return L"R Alt";
     case 69:
-        return "RightGui";
+        return L"R WIN";
     case 70:
-        return "Application";
+        return L"App";
     case 71:
-        return "LedProgramming";
+        return L"LedProgramming";
     case 72:
-        return "Brightness";
+        return L"Brightness";
     case 73:
-        return "F12";
+        return L"F12";
     case 74:
-        return "PrintScreen";
+        return L"P Screen";
     case 75:
-        return "ScrollLock";
+        return L"S Lock";
     case 76:
-        return "PauseBreak";
+        return L"Break";
     case 77:
-        return "Insert";
+        return L"Ins";
     case 78:
-        return "Home";
+        return L"Home";
     case 79:
-        return "PageUp";
+        return L"PageUp";
     case 80:
-        return "BracketRight";
+        return L"]}";
     case 81:
-        return "Backslash";
+        return L"Backslash";
     case 82:
-        return "NonUsTilde";
+        return L"NonUsTilde";
     case 83:
-        return "Enter";
+        return L"Enter";
     case 84:
-        return "International1";
+        return L"International1";
     case 85:
-        return "EqualsAndPlus";
+        return L"EqualsAndPlus";
     case 86:
-        return "International3";
+        return L"International3";
     case 87:
-        return "Backspace";
+        return L"Backspace";
     case 88:
-        return "Delete";
+        return L"Delete";
     case 89:
-        return "End";
+        return L"End";
     case 90:
-        return "PageDown";
+        return L"PageDown";
     case 91:
-        return "RightShift";
+        return L"RightShift";
     case 92:
-        return "RightCtrl";
+        return L"RightCtrl";
     case 93:
-        return "UpArrow";
+        return L"UpArrow";
     case 94:
-        return "LeftArrow";
+        return L"LeftArrow";
     case 95:
-        return "DownArrow";
+        return L"DownArrow";
     case 96:
-        return "RightArrow";
+        return L"RightArrow";
     case 97:
-        return "WinLock";
+        return L"WinLock";
     case 98:
-        return "Mute";
+        return L"Mute";
     case 99:
-        return "Stop";
+        return L"Stop";
     case 100:
-        return "ScanPreviousTrack";
+        return L"ScanPreviousTrack";
     case 101:
-        return "PlayPause";
+        return L"PlayPause";
     case 102:
-        return "ScanNextTrack";
+        return L"ScanNextTrack";
     case 103:
-        return "NumLock";
+        return L"NumLock";
     case 104:
-        return "KeypadSlash";
+        return L"KeypadSlash";
     case 105:
-        return "KeypadAsterisk";
+        return L"KeypadAsterisk";
     case 106:
-        return "KeypadMinus";
+        return L"KeypadMinus";
     case 107:
-        return "KeypadPlus";
+        return L"KeypadPlus";
     case 108:
-        return "KeypadEnter";
+        return L"KeypadEnter";
     case 109:
-        return "Keypad7";
+        return L"Keypad7";
     case 110:
-        return "Keypad8";
+        return L"Keypad8";
     case 111:
-        return "Keypad9";
+        return L"Keypad9";
     case 112:
-        return "KeypadComma";
+        return L"KeypadComma";
     case 113:
-        return "Keypad4";
+        return L"Keypad4";
     case 114:
-        return "Keypad5";
+        return L"Keypad5";
     case 115:
-        return "Keypad6";
+        return L"Keypad6";
     case 116:
-        return "Keypad1";
+        return L"Keypad1";
     case 117:
-        return "Keypad2";
+        return L"Keypad2";
     case 118:
-        return "Keypad3";
+        return L"Keypad3";
     case 119:
-        return "Keypad0";
+        return L"Keypad0";
     case 120:
-        return "KeypadPeriodAndDelete";
+        return L"KeypadPeriodAndDelete";
     case 121:
-        return "G1";
+        return L"G1";
     case 122:
-        return "G2";
+        return L"G2";
     case 123:
-        return "G3";
+        return L"G3";
     case 124:
-        return "G4";
+        return L"G4";
     case 125:
-        return "G5";
+        return L"G5";
     case 126:
-        return "G6";
+        return L"G6";
     case 127:
-        return "G7";
+        return L"G7";
     case 128:
-        return "G8";
+        return L"G8";
     case 129:
-        return "G9";
+        return L"G9";
     case 130:
-        return "G10";
+        return L"G10";
     case 131:
-        return "VolumeUp";
+        return L"VolumeUp";
     case 132:
-        return "VolumeDown";
+        return L"VolumeDown";
     case 133:
-        return "MR";
+        return L"MR";
     case 134:
-        return "M1";
+        return L"M1";
     case 135:
-        return "M2";
+        return L"M2";
     case 136:
-        return "M3";
+        return L"M3";
     case 137:
-        return "G11";
+        return L"G11";
     case 138:
-        return "G12";
+        return L"G12";
     case 139:
-        return "G13";
+        return L"G13";
     case 140:
-        return "G14";
+        return L"G14";
     case 141:
-        return "G15";
+        return L"G15";
     case 142:
-        return "G16";
+        return L"G16";
     case 143:
-        return "G17";
+        return L"G17";
     case 144:
-        return "G18";
+        return L"G18";
     case 145:
-        return "International5";
+        return L"International5";
     case 146:
-        return "International4";
+        return L"International4";
     case 147:
-        return "Fn";
+        return L"Fn";
     default:
-        return "";
+        return L"";
     }
 }

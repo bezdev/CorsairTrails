@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CUESDK.h"
+#include <Windows.h>
 #include <WinUser.h>
 
 #include <algorithm>
@@ -13,19 +14,36 @@ enum class BezEffect
     HeatSpectrum
 };
 
-struct LitColor
+struct BezColor
 {
-    int r;
-    int g;
-    int b;
+	int r;
+	int g;
+	int b;
 };
 
-LitColor GetRandomLitColor()
+struct BezKey
+{
+	bool isLit;
+	bool isDown;
+	unsigned int hitCount;
+	std::chrono::high_resolution_clock::time_point litTime;
+	struct BezColor litColor;
+
+	void Reset()
+	{
+		isLit = false;
+		isDown = false;
+		hitCount = 0;
+		litColor = { 0 };
+	}
+};
+
+static BezColor GetRandomColor()
 {
     return { rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1 };
 }
 
-LitColor GetLitColorInSpectrum(LitColor start, LitColor end, float percent)
+static BezColor GetColorInSpectrum(BezColor start, BezColor end, float percent)
 {
     if (percent > 100) { percent = 100; }
 
@@ -37,7 +55,7 @@ LitColor GetLitColorInSpectrum(LitColor start, LitColor end, float percent)
     return { r, g, b };
 }
 
-HRESULT GetLedsForNumber(int number, LitColor color, CorsairLedColor** ledColors, int* size)
+static HRESULT GetLedsForNumber(int number, BezColor color, CorsairLedColor** ledColors, int* size)
 {
     std::array<CorsairLedId, 14> numberLeds{
         CLK_NumLock,   CLK_KeypadSlash,  CLK_KeypadAsterisk,
@@ -199,7 +217,7 @@ HRESULT GetLedsForNumber(int number, LitColor color, CorsairLedColor** ledColors
     return S_OK;
 }
 
-CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
+static CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
 {
     switch (vkey)
     {
@@ -361,7 +379,7 @@ CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
     }
 }
 
-wchar_t* KeyToString(DWORD key)
+static wchar_t* KeyToString(DWORD key)
 {
     switch (key)
     {

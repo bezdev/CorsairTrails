@@ -11,7 +11,8 @@ HRESULT CorsairManager::Initialize()
 
 	CorsairPerformProtocolHandshake();
 
-	if (const auto error = CorsairGetLastError())
+	CorsairError error = CorsairGetLastError();
+	if (error != CE_Success)
 	{
 		std::cerr << "Handshake failed: " << error << std::endl;
 		return E_FAIL;
@@ -37,5 +38,3 @@ HRESULT CorsairManager::Initialize()
 
 	return S_OK;
 }
-
-

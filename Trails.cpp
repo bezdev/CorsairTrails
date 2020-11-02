@@ -1,34 +1,18 @@
-// Trails.cpp : Defines the entry point for the console application.
-//
-
-#include "CUESDK.h"
-
 #include <windows.h>
 #include <iostream>
 #include <thread>
 #include <string.h>
 #include <stdlib.h> 
 #include <tchar.h>  
-#include <gdiplus.h>
 
+#include "Util.h"
+#include "CUESDK.h"
 #include "InputManager.h"
 #include "CorsairManager.h"
-#include "BezCorsairHelper.h"
 #include "GUI.h"
-
-#pragma comment (lib, "Gdiplus.lib")
-
-using namespace Gdiplus;
-
-#define DEBUG
+#include "Timer.h"
 
 #define RETURN_IF_FAILED(hr) do { if (FAILED(hr)) { return -1; } } while(0)
-
-#ifdef DEBUG
-#define DEBUG_LOG(string) do { OutputDebugStringW(string "\n"); } while(0)
-#else
-#define DEBUG_LOG(string)
-#endif
 
 static int WINDOW_WIDTH = 600;
 static int WINDOW_HEIGHT = 800;
@@ -41,58 +25,59 @@ const int MAX_LIT_TIME = 1000 * 60 * 30;  // 30 min
 InputManager* g_InputManager;
 GUI* g_GUI;
 
-HHOOK g_Hook;
+HHOOK g_KeyboardHook;
+HHOOK g_MouseHook;
 HWND g_HWND;
 bool g_HasCorsairKeyboard;
 
-void handleNumPad(DWORD vkey)
-{
-    int size;
-    CorsairLedColor* ledColors;
-    GetLedsForNumber(vkey - VK_NUMPAD0, { 255, 0, 0 }, &ledColors, &size);
-
-    CorsairSetLedsColorsAsync(size, ledColors, nullptr, nullptr);
-    free(ledColors);
-}
-
 LRESULT __stdcall OnKeyboardEvent(int nCode, WPARAM wParam, LPARAM lParam)
 {
+	/*
 	if (nCode >= HC_ACTION)
 	{
-		if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+		if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
 		{
-			g_InputManager->OnKeyUp(wParam, lParam);
-		}
-		else if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
-		{
+			//LOG(_T("keyboard hook down"));
+			LOG(L"keyboard hook down");
 			g_InputManager->OnKeyDown(wParam, lParam);
 			InvalidateRect(g_HWND, NULL, TRUE);
 		}
+		else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+		{
+			g_InputManager->OnKeyUp(wParam, lParam);
+		}
 	}
+	*/
+    return CallNextHookEx(g_KeyboardHook, nCode, wParam, lParam);
+}
 
-    return CallNextHookEx(g_Hook, nCode, wParam, lParam);
+LRESULT __stdcall OnMouseEvent(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	/*
+	if (nCode >= HC_ACTION)
+	{
+		if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN)
+		{
+			//LOG(_T("mouse hook down"));
+			LOG(L"mouse hook down");
+			g_InputManager->OnMouseDown(wParam, lParam);
+			InvalidateRect(g_HWND, NULL, TRUE);
+		}
+		else if (wParam == WM_LBUTTONUP || wParam == WM_RBUTTONUP)
+		{
+			g_InputManager->OnMouseUp(wParam, lParam);
+		}
+	}
+	*/
+
+	return CallNextHookEx(g_MouseHook, nCode, wParam, lParam);
 }
 
 void Cleanup()
 {
-    UnhookWindowsHookEx(g_Hook);
-    CorsairReleaseControl(CAM_ExclusiveLightingControl);
-}
-
-void PrintKeyHitCounts(HDC hdc, std::vector<std::pair<std::wstring, int>>& keyHitCounts)
-{
-    int i = 0;
-    std::vector<std::pair<std::wstring, int>>::iterator it = keyHitCounts.end();
-    while (it != keyHitCounts.begin())
-    {
-        it--;
-
-        wchar_t buffer[50];
-        int n = wsprintf(buffer, L"%s: %d", (*it).first.c_str(), (*it).second);
-        TextOut(hdc, 5, 5 + (i * 20), buffer, n);
-
-        i++;
-    }
+	UnhookWindowsHookEx(g_KeyboardHook);
+	UnhookWindowsHookEx(g_MouseHook);
+	CorsairReleaseControl(CAM_ExclusiveLightingControl);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -109,6 +94,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         EndPaint(hWnd, &ps);
         break;
+	case WM_INPUT:
+		g_InputManager->ProcessRawInput(wParam, lParam);
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         Cleanup();
@@ -138,11 +126,62 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 static void DisplayMessageBox(LPCTSTR lpText, HWND hWnd = NULL) {
-	MessageBox(
-		hWnd,
-		lpText,
-		WINDOW_TITLE,
-		NULL);
+	MessageBox(hWnd, lpText, WINDOW_TITLE, NULL);
+}
+
+static bool HandleMessages()
+{
+	MSG msg;
+	while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	
+	return true;
+}
+
+static void Run()
+{
+	Timer* timer = new Timer();
+	auto s = scope_exit([timer]() {
+		delete timer;
+		});
+
+	const int fps = 20;
+	const float frameTime = 1000.f / fps;
+	float delta = 0;
+
+	// main loop
+	bool isFirstMainLoop = true;
+	while (HandleMessages())
+	{
+		if (isFirstMainLoop)
+		{
+			timer->Reset();
+		}
+		else
+		{
+			timer->Update();
+		}
+
+		delta += timer->GetDelta();
+
+		if (delta > frameTime) {
+			delta -= frameTime;
+
+			InvalidateRect(g_HWND, NULL, TRUE);
+		}
+
+		//float f = timer->GetDelta() + 64.94f;
+
+		/*
+		LOG(L"delta: %f", f);
+		LOG(L"delta: %d", (int)f);
+		*/
+
+		isFirstMainLoop = false;
+	}
 }
 
 int WINAPI WinMain(
@@ -157,17 +196,6 @@ int WINAPI WinMain(
 
 	g_InputManager = new InputManager();
 	g_GUI = new GUI();
-
-	if (!(g_Hook = SetWindowsHookEx(WH_KEYBOARD_LL, OnKeyboardEvent, NULL, 0)))
-	{
-		DisplayMessageBox(_T("Hook failed"));
-		return E_FAIL;
-	}
-
-    // Initialize GDI+.
-    GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
-    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
     WNDCLASSEX wcex;
     wcex.cbSize = sizeof(WNDCLASSEX);
@@ -206,16 +234,33 @@ int WINAPI WinMain(
 		DisplayMessageBox(_T("Call to CreateWindow failed"));
 		return E_FAIL;
     }
+	
+	/*
+	if (!(g_KeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, OnKeyboardEvent, NULL, 0)))
+	{
+		DisplayMessageBox(_T("Keyboard hook failed"));
+		return E_FAIL;
+	}
+	if (!(g_MouseHook = SetWindowsHookEx(WH_MOUSE_LL, OnMouseEvent, NULL, 0)))
+	{
+		DisplayMessageBox(_T("Mouse hook failed"));
+		return E_FAIL;
+	}
+	*/
+
+	RAWINPUTDEVICE rid[3];
+	rid[0] = { 0x01, 0x02, RIDEV_NOLEGACY | RIDEV_INPUTSINK, g_HWND }; // mouse
+	rid[1] = { 0x01, 0x06, RIDEV_NOLEGACY | RIDEV_INPUTSINK, g_HWND }; // keyboard
+	//rid[2] = { 0x01, 0x05, 0, g_HWND }; // controller
+	if (!RegisterRawInputDevices(rid, 2, sizeof(rid[0]))) {
+		DisplayMessageBox(_T("Register RawInput failed"));
+		return E_FAIL;
+	}
 
     ShowWindow(g_HWND, nShowCmd);
-    UpdateWindow(g_HWND);
+	UpdateWindow(g_HWND);
 
-    MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    return (int)msg.wParam;
+	Run();
+	
+	return 0;
 }

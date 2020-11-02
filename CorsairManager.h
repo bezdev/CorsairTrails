@@ -11,7 +11,7 @@
 #include <tchar.h>  
 #include <gdiplus.h>
 
-#include "BezCorsairHelper.h"
+#include "Util.h"
 
 class CorsairManager
 {

@@ -105,6 +105,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,11 +159,13 @@
     <ClCompile Include="CorsairManager.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Trails.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h" />
-    <ClInclude Include="BezCorsairHelper.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Util.h" />
     <ClInclude Include="CorsairManager.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Stats.h" />

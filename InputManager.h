@@ -1,8 +1,6 @@
 #pragma once
 
-#include <chrono>
-
-#include "BezCorsairHelper.h"
+#include "Util.h"
 
 class InputManager
 {
@@ -12,19 +10,32 @@ public:
 	const BezColor END_SPECTRUM = { 255, 0, 255 };
 	static const unsigned int KEY_HITS_IN_SPECTRUM = 150;
 	static const unsigned int HISTORY_SIZE = 10;
-	static const unsigned int NUM_KEYS = CLI_Last + 1;
+	// TODO: refactors keys to be indexed by vkey
+	static const unsigned int NUM_KEYS = CLI_Last + 1 + /*hack:*/ 2;
+	static const unsigned int NUM_MOUSE_BUTTONS = BMB_LAST + 1;
+
+	// hack
+	static const unsigned int RMB_ID = CLI_Last + 1;
+	static const unsigned int LMB_ID = CLI_Last + 2;
 
 	InputManager();
 
-	void OnKeyDown(WPARAM wParam, LPARAM lParam);
-	void OnKeyUp(WPARAM wParam, LPARAM lParam);
+	void OnKeyDown(unsigned short vkey);
+	void OnKeyUp(unsigned short vkey);
+	void OnMouseDown(WPARAM wParam, LPARAM lParam);
+	void OnMouseUp(WPARAM wParam, LPARAM lParam);
 
-	BezKey* GetKeys() { return Keys; }
+	void ProcessRawInput(WPARAM wParam, LPARAM lParam);
+
+	void UpdateHistory(int id);
+
+	BezKey* GetKeys();
 	std::vector<std::pair<int, int>>& GetKeyHistory() { return KeyHistory; };
-	int GetTotalKeyHits() { return TotalKeyHits; };
-
+	int GetTotalKeyHits();
+		
 private:
 	BezKey Keys[NUM_KEYS] = { 0 };
+	BezKey MouseButtons[NUM_MOUSE_BUTTONS] = { 0 };
 	std::vector<std::pair<int, int>> KeyHistory;
 	int TotalKeyHits = 0;
 };

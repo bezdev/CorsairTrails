@@ -1,12 +1,38 @@
 #pragma once
 
-#include "CUESDK.h"
 #include <Windows.h>
 #include <WinUser.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <stdarg.h>
 
+#include <iostream>
 #include <algorithm>
 #include <array>
 #include <vector>
+#include <chrono>
+#include <string>
+#include <thread>
+#include <sstream>
+
+#include "CUESDK.h"
+
+#define DEBUG
+
+#ifdef DEBUG
+#define LOG(msg, ...) do { wchar_t buffer[100]; swprintf(buffer, 100, msg, __VA_ARGS__); auto id = std::this_thread::get_id(); std::wstringstream ss; ss << id << ":" << buffer << std::endl; auto str = ss.str(); const wchar_t* cstr = str.c_str(); OutputDebugStringW(cstr); } while(0)
+#else
+#define LOG
+#endif
+
+enum BezMouseButton {
+	LEFT,
+	MIDDLE,
+	RIGHT,
+	M4,
+	M5,
+	BMB_LAST = M5
+};
 
 enum class BezEffect
 {
@@ -23,18 +49,19 @@ struct BezColor
 
 struct BezKey
 {
-	bool isLit;
-	bool isDown;
-	unsigned int hitCount;
-	std::chrono::high_resolution_clock::time_point litTime;
-	struct BezColor litColor;
+	bool IsLit;
+	bool IsDown;
+	unsigned int HitCount;
+	// TODO: change
+	std::chrono::high_resolution_clock::time_point LitTime;
+	struct BezColor Color;
 
 	void Reset()
 	{
-		isLit = false;
-		isDown = false;
-		hitCount = 0;
-		litColor = { 0 };
+		IsLit = false;
+		IsDown = false;
+		HitCount = 0;
+		Color = { 0 };
 	}
 };
 
@@ -217,7 +244,7 @@ static HRESULT GetLedsForNumber(int number, BezColor color, CorsairLedColor** le
     return S_OK;
 }
 
-static CorsairLedId GetLedIdForKey(DWORD vkey, DWORD flags)
+static CorsairLedId GetLedIdForKey(unsigned short vkey, DWORD flags)
 {
     switch (vkey)
     {
@@ -677,7 +704,33 @@ static wchar_t* KeyToString(DWORD key)
         return L"International4";
     case 147:
         return L"Fn";
+	case 171:
+		return L"LMB";
+	case 170:
+		return L"RMB";
     default:
         return L"";
     }
+}
+
+template <typename T>
+class lambda_call
+{
+public:
+	explicit lambda_call(T&& lambda) : m_Lambda(std::move(lambda))
+	{
+	}
+
+	~lambda_call()
+	{
+		m_Lambda();
+	}
+protected:
+	T m_Lambda;
+};
+
+template <typename T>
+inline auto scope_exit(T&& lambda)
+{
+	return lambda_call<T>(std::forward<T>(lambda));
 }

@@ -1,5 +1,21 @@
 #include "CorsairManager.h"
 
+CorsairManager* CorsairManager::Instance;
+
+CorsairManager* CorsairManager::GetInstance()
+{
+	if (Instance != nullptr) {
+		return Instance;
+	}
+
+	Instance = new CorsairManager();
+	if (FAILED(Instance->Initialize())) {
+		return nullptr;
+	}
+
+	return Instance;
+}
+
 CorsairManager::CorsairManager()
 {
 
@@ -37,4 +53,11 @@ HRESULT CorsairManager::Initialize()
 	CorsairSetLedsColorsAsync(1, &logoColor, nullptr, nullptr);
 
 	return S_OK;
+}
+
+void CorsairManager::LightKey(unsigned short vkey, BezColor color)
+{
+	CorsairLedId ledId = GetLedIdForKey(vkey);
+	CorsairLedColor ledColor = CorsairLedColor{ ledId, color.r, color.g, color.b };
+	CorsairSetLedsColorsAsync(1, &ledColor, nullptr, nullptr);
 }

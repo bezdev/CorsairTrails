@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Corsair">
+      <UniqueIdentifier>{1c96987f-57d8-48fa-8284-a51555206624}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Trails.cpp">
@@ -24,39 +27,36 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUI.cpp">
+    <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
+    <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\CorsairLedIdEnum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CUESDK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CUESDKGlobal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CorsairManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Stats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CorsairLedIdEnum.h">
+      <Filter>Header Files\Corsair</Filter>
+    </ClInclude>
+    <ClInclude Include="CorsairManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CUESDK.h">
+      <Filter>Header Files\Corsair</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CUESDKGlobal.h">
+      <Filter>Header Files\Corsair</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

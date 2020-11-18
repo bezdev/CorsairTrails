@@ -33,5 +33,7 @@ private:
 	bool m_IsUpdated;
 
 	void Renderer::DrawTable(Gdiplus::Graphics& graphics, int width, int height, POINT position);
-	void Renderer::DrawHistory(Gdiplus::Graphics& graphics);
+	void Renderer::DrawKeys(Gdiplus::Graphics& graphics, int width, int height, POINT position);
+	void Renderer::DrawHistory(Gdiplus::Graphics& graphics, int width, int height, POINT position);
+	void Renderer::DrawKey(Gdiplus::Graphics& graphics, BezKey key, int width, int height, POINT position);
 };

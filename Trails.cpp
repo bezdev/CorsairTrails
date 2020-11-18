@@ -20,7 +20,6 @@ HWND g_HWND;
 
 void Cleanup()
 {
-	CorsairReleaseControl(CAM_ExclusiveLightingControl);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -146,7 +145,7 @@ int WINAPI WinMain(
 		DisplayMessageBox(_T("Call to CreateWindow failed"));
 		return E_FAIL;
     }
-	
+
 	Renderer::GetInstance()->Initialize(g_HWND);
 
 	RAWINPUTDEVICE rid[2];

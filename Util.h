@@ -97,7 +97,7 @@ static wchar_t* KeyToString(unsigned short vkey)
 		case VK_CONTROL: return L"CTRL";
 		case VK_MENU: return L"ALT";
 		case VK_PAUSE: return L"PAUSE";
-		case VK_CAPITAL: return L"CAPSLOCK";
+		case VK_CAPITAL: return L"CAP";
 		case VK_KANA: return L"IME Kana mode";
 		case VK_JUNJA: return L"IME Junja mode";
 		case VK_FINAL: return L"IME final mode";
@@ -159,7 +159,7 @@ static wchar_t* KeyToString(unsigned short vkey)
 		case 0x58: return L"X";
 		case 0x59: return L"Y";
 		case 0x5A: return L"Z";
-		case VK_LWIN: return L"Left Windows key (Natural keyboard)";
+		case VK_LWIN: return L"WIN";
 		case VK_RWIN: return L"Right Windows key (Natural keyboard)";
 		case VK_APPS: return L"Applications key (Natural keyboard)";
 		case VK_SLEEP: return L"Computer Sleep";
@@ -205,10 +205,10 @@ static wchar_t* KeyToString(unsigned short vkey)
 		case VK_F24: return L"F24";
 		case VK_NUMLOCK: return L"NUM LOCK";
 		case VK_SCROLL: return L"SCROLL LOCK";
-		case VK_LSHIFT: return L"Left SHIFT";
-		case VK_RSHIFT: return L"Right SHIFT";
-		case VK_LCONTROL: return L"Left CONTROL";
-		case VK_RCONTROL: return L"Right CONTROL";
+		case VK_LSHIFT: return L"LSHIFT";
+		case VK_RSHIFT: return L"RSHIFT";
+		case VK_LCONTROL: return L"LCTRL";
+		case VK_RCONTROL: return L"RCTRL";
 		case VK_LMENU: return L"Left MENU";
 		case VK_RMENU: return L"Right MENU";
 		case VK_BROWSER_BACK: return L"Browser Back";

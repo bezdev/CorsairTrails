@@ -66,6 +66,8 @@ void InputManager::OnKeyDown(unsigned short vkey)
 void InputManager::OnKeyUp(unsigned short vkey)
 {
 	GetKey(vkey)->IsDown = false;
+
+	Renderer::GetInstance()->TriggerUpdate();
 }
 
 void InputManager::ProcessRawInput(WPARAM wParam, LPARAM lParam)

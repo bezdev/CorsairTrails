@@ -68,7 +68,7 @@ void Renderer::Render()
 	graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighSpeed);
 
 	DrawTable(graphics, width, 300, { 0, 50 });
-	DrawKeys(graphics, width, height - 400, { 0, 400 });
+	DrawKeys(graphics, width, -1, { 0, 400 });
 	// DrawHistory(graphics, width, 500, { 0, 450 });
 
 	BitBlt(hdc, 0, 0, width, height, hdcBuffer, 0, 0, SRCCOPY);
@@ -181,14 +181,15 @@ void Renderer::DrawTable(Graphics& graphics, int width, int height, POINT positi
 
 struct KeyVisual
 {
-	BezKey Key;
+	BezKey* Key;
 	int Width;
 	int Height;
 };
 
 void Renderer::DrawKeys(Graphics& graphics, int width, int height, POINT position)
 {
-	const int c_Padding = 10;
+	const int c_KeysPadding = 30;
+	const int c_KeyPadding = 10;
 	const int c_KeyWidth = 40;
 	const int c_KeyHeight = c_KeyWidth;
 
@@ -202,77 +203,83 @@ void Renderer::DrawKeys(Graphics& graphics, int width, int height, POINT positio
 		{
 			if (i != 0)
 			{
-				currentKeyPosition.x += visuals[i - 1].Width / 2 + c_Padding;
+				currentKeyPosition.x += visuals[i - 1].Width / 2 + c_KeyPadding;
 			}
 			currentKeyPosition.x += visuals[i].Width / 2;
-			DrawKey(graphics, visuals[i].Key, visuals[i].Width, visuals[i].Height, currentKeyPosition);
+			
+			if (visuals[i].Key == nullptr) continue;
+
+			DrawKey(graphics, *visuals[i].Key, visuals[i].Width, visuals[i].Height, currentKeyPosition);
 		}
 	};
 
 	KeyVisual firstRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_ESCAPE), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_F1), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_F2), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_F3), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_F4), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_ESCAPE), c_KeyWidth, c_KeyHeight },
+		{ nullptr, c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_F1), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_F2), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_F3), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_F4), c_KeyWidth, c_KeyHeight },
 	};
 	KeyVisual secondRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_OEM_3), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x31), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x32), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x33), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x34), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x35), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_OEM_3), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x31), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x32), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x33), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x34), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x35), c_KeyWidth, c_KeyHeight },
 	};
 	KeyVisual thirdRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_TAB), static_cast<int>(c_KeyWidth * 1.5f), c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x51), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x57), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x45), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x52), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x54), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_TAB), static_cast<int>(c_KeyWidth * 1.5f), c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x51), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x57), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x45), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x52), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x54), c_KeyWidth, c_KeyHeight },
 	};
 	KeyVisual fourthRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_CAPITAL), c_KeyWidth * 2, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x41), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x53), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x44), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x46), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x47), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_CAPITAL), c_KeyWidth * 2, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x41), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x53), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x44), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x46), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x47), c_KeyWidth, c_KeyHeight },
 	};
 	KeyVisual fifthRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_SHIFT), static_cast<int>(c_KeyWidth * 2.5), c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x5A), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x58), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x43), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x56), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(0x42), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_SHIFT), static_cast<int>(c_KeyWidth * 2.5), c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x5A), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x58), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x43), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x56), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(0x42), c_KeyWidth, c_KeyHeight },
 	};
 	KeyVisual sixRowKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(VK_CONTROL), static_cast<int>(c_KeyWidth * 2.5), c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_LWIN), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_MENU), c_KeyWidth, c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(VK_SPACE), c_KeyWidth * 5, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_CONTROL), static_cast<int>(c_KeyWidth * 2.5), c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_LWIN), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_MENU), c_KeyWidth, c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(VK_SPACE), c_KeyWidth * 5, c_KeyHeight },
 	};
 	KeyVisual mouseKeys[] =
 	{
-		{ *InputManager::GetInstance()->GetKey(BezMouseButton::LEFT), c_KeyWidth, 3 * c_KeyHeight },
-		{ *InputManager::GetInstance()->GetKey(BezMouseButton::RIGHT), c_KeyWidth, 3 * c_KeyHeight},
+		{ InputManager::GetInstance()->GetKey(BezMouseButton::LEFT), c_KeyWidth, 3 * c_KeyHeight },
+		{ InputManager::GetInstance()->GetKey(BezMouseButton::RIGHT), c_KeyWidth, 3 * c_KeyHeight},
 	};
 
+	position.x += c_KeysPadding;
+
 	addRow(firstRowKeys, 5, { position.x, position.y });
-	addRow(secondRowKeys, 6, { position.x, position.y + 1 * (c_KeyHeight + c_Padding) });
-	addRow(thirdRowKeys, 6, { position.x, position.y + 2 * (c_KeyHeight + c_Padding) });
-	addRow(fourthRowKeys, 6, { position.x, position.y + 3 * (c_KeyHeight + c_Padding) });
-	addRow(fifthRowKeys, 6, { position.x, position.y + 4 * (c_KeyHeight + c_Padding) });
-	addRow(sixRowKeys, 4, { position.x, position.y + 5 * (c_KeyHeight + c_Padding) });
-	addRow(mouseKeys, 2, { width - c_KeyWidth * 4 - c_Padding, position.y });
+	addRow(secondRowKeys, 6, { position.x, position.y + 1 * (c_KeyHeight + c_KeyPadding) });
+	addRow(thirdRowKeys, 6, { position.x, position.y + 2 * (c_KeyHeight + c_KeyPadding) });
+	addRow(fourthRowKeys, 6, { position.x, position.y + 3 * (c_KeyHeight + c_KeyPadding) });
+	addRow(fifthRowKeys, 6, { position.x, position.y + 4 * (c_KeyHeight + c_KeyPadding) });
+	addRow(sixRowKeys, 4, { position.x, position.y + 5 * (c_KeyHeight + c_KeyPadding) });
+	addRow(mouseKeys, 2, { width - c_KeysPadding - 2 * c_KeyWidth - c_KeyPadding, position.y });
 
 }
 

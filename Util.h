@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 #include <WinUser.h>
@@ -107,15 +107,15 @@ static wchar_t* KeyToString(unsigned short vkey)
 		case VK_NONCONVERT: return L"IME nonconvert";
 		case VK_ACCEPT: return L"IME accept";
 		case VK_MODECHANGE: return L"IME mode change request";
-		case VK_SPACE: return L"SPACEBAR";
+		case VK_SPACE: return L"SPACE";
 		case VK_PRIOR: return L"PAGE UP";
 		case VK_NEXT: return L"PAGE DOWN";
 		case VK_END: return L"END";
 		case VK_HOME: return L"HOME";
-		case VK_LEFT: return L"LEFT ARROW";
-		case VK_UP: return L"UP ARROW";
-		case VK_RIGHT: return L"RIGHT ARROW";
-		case VK_DOWN: return L"DOWN ARROW";
+		case VK_LEFT: return L"←";
+		case VK_UP: return L"↑";
+		case VK_RIGHT: return L"→";
+		case VK_DOWN: return L"↓";
 		case VK_SELECT: return L"SELECT";
 		case VK_PRINT: return L"PRINT";
 		case VK_EXECUTE: return L"EXECUTE";

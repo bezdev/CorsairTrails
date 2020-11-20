@@ -12,7 +12,7 @@
 #include "Timer.h"
 
 static int WINDOW_WIDTH = 600;
-static int WINDOW_HEIGHT = 800;
+static int WINDOW_HEIGHT = 750;
 static TCHAR WINDOW_CLASS[] = _T("trails");
 static TCHAR WINDOW_TITLE[] = _T("Trails");
 
@@ -20,6 +20,9 @@ HWND g_HWND;
 
 void Cleanup()
 {
+	delete CorsairManager::GetInstance();
+	delete Renderer::GetInstance();
+	delete InputManager::GetInstance();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -36,8 +39,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
     case WM_DESTROY:
         PostQuitMessage(0);
-        Cleanup();
-        break;
+		break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
         break;
@@ -46,7 +48,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
-static void DisplayMessageBox(LPCTSTR lpText, HWND hWnd = NULL) {
+static void DisplayMessageBox(LPCTSTR lpText, HWND hWnd = NULL)
+{
 	MessageBox(hWnd, lpText, WINDOW_TITLE, NULL);
 }
 
@@ -55,6 +58,11 @@ static bool HandleMessages()
 	MSG msg;
 	while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
 	{
+		if (msg.message == WM_QUIT)
+		{
+			return false;
+		}
+
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
@@ -106,8 +114,6 @@ int WINAPI WinMain(
 	_In_ int nShowCmd
 )
 {
-	CorsairManager* corsairManager = CorsairManager::GetInstance();
-
     WNDCLASSEX wcex;
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -163,7 +169,7 @@ int WINAPI WinMain(
 
 	Run();
 	
-	delete (corsairManager);
+	Cleanup();
 
 	return 0;
 }
